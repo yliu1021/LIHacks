@@ -92,6 +92,7 @@ public class WitRequest {
                     humidity);
         }
 
+
         return null;
 //        return "http://icons-ak.wxug.com/i/c/k/clear.gif";
     }
