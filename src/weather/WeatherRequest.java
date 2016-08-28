@@ -51,8 +51,6 @@ public class WeatherRequest {
             return null;
         }
 
-        connection.setRequestProperty("Authorization", "Bearer " + apiKey);
-
         try {
             InputStream inputStream = connection.getInputStream();
             BufferedReader inputReader = new BufferedReader(new InputStreamReader(inputStream));
