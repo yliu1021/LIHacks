@@ -1,0 +1,22 @@
+package com.Yuhan;
+
+import bot.*;
+import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.api.*;
+
+public class Main {
+
+    private static String token = "MjE5Mjk2NzA2MzA1NDU4MTc2.CqProw.WVtuEQYTVTkuvy2e2PTE6-E5nrE";
+
+    public static void main(String[] args) {
+
+        IDiscordClient b;
+        try {
+            b = new ClientBuilder().withToken(token).login();
+        } catch (DiscordException e) {
+
+        }
+
+
+    }
+}
