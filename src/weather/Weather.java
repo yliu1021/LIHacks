@@ -8,8 +8,8 @@ import json.JSONObject;
  */
 public class Weather {
 
-    public static void loadWeather(JSONObject object) {
-        JSONObject jsonObject = new JSONObject(sampleResponse);
+    public static void loadWeather(JSONObject jsonObject) {
+        jsonObject = new JSONObject(sampleResponse);
 
         JSONArray forecasts = jsonObject.getJSONArray("hourly_forecast");
         int length = forecasts.length();
