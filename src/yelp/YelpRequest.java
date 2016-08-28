@@ -1,6 +1,7 @@
 package yelp;
 
 import json.JSONObject;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.exception.ExceptionContext;
 
@@ -12,6 +13,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.SignatureException;
+
 import java.util.Calendar;
 import java.util.Formatter;
 import java.util.TimeZone;
@@ -26,12 +28,14 @@ public class YelpRequest {
 
     private static String consumerKey = "I2_iiCfiss0ZPACujmeH0A";
     private static String consumerSecret = "bzj2XAJkPBckTpgj0oP3T3_TOow";
-    private static String token = "km8Kw9wg5WSAzmQizP4-kFvUrj0UFUtO";
-    private static String tokenSecret = "p5FHySnRvk4-vX0-PBd8Uv_01rg";
+    private static String token = "L733sbUuiz5TcmkJOUDUwGAUQGHKit_2";
+    private static String tokenSecret = "Y4TPbk3Z1hqm3pV-nyI9dOigoss";
 
     public static JSONObject getYelpJson(String term, String location) {
         if (location == null) location = "Great Neck, NY";
         try {
+            term = term.replace(" ", "+");
+            location = location.replace(" ", "+");
             term = URLEncoder.encode(term, "UTF-8");
             location = URLEncoder.encode(location, "UTF-8");
         } catch (UnsupportedEncodingException e) {
@@ -40,22 +44,34 @@ public class YelpRequest {
             return null;
         }
 
-        String url = String.format("https://api.yelp.com/v2/search?location=%s", location);
-        return new JSONObject(getRawJson(url, term));
+        String url = String.format("https://api.yelp.com/v2/search");
+        return new JSONObject(getRawJson(url, term, location));
     }
 
-    private static String getRawJson(String urlPath, String term) {
+    private static String getRawJson(String urlPath, String term, String location) {
         String parameters = "";
+        parameters += "location=" + location;
         parameters += "&oauth_consumer_key=" + consumerKey;
         SecureRandom random = new SecureRandom();
         parameters += "&oauth_nonce=" + new BigInteger(130, random).toString(32);
+
         parameters += "&oauth_signature_method=" + "HMAC-SHA1";
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         long secondsSinceEpoch = calendar.getTimeInMillis() / 1000L;
         parameters += "&oauth_timestamp=" + Integer.toString((int)secondsSinceEpoch);
         parameters += "&oauth_token=" + token;
+
+        parameters += "&term=" + term;
+
+        String data;
         try {
-            parameters += "&oauth_signature=" + HmacSha1Signature.calculateRFC2104HMAC(consumerSecret, consumerKey);
+            data = "GET&" + URLEncoder.encode(urlPath, "UTF-8") + "&" + URLEncoder.encode(parameters, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return null;
+        }
+
+        try {
+            parameters += "&oauth_signature=" + HmacSha1Signature.calculateRFC2104HMAC(data, consumerSecret+"&"+tokenSecret);
         } catch (InvalidKeyException e) {
             System.out.println("Invalid key");
             return null;
@@ -65,10 +81,12 @@ public class YelpRequest {
         } catch (SignatureException e) {
             System.out.println("Signature exception");
             return null;
+        } catch (UnsupportedEncodingException e) {
+            System.out.println("Unsupported encoding");
+            return null;
         }
-        parameters += "&term=" + term;
 
-        urlPath += parameters;
+        urlPath += "?" + parameters;
 
         URL url;
         try {
@@ -153,11 +171,13 @@ class HmacSha1Signature {
     }
 
     static String calculateRFC2104HMAC(String data, String key)
-            throws SignatureException, NoSuchAlgorithmException, InvalidKeyException
+            throws SignatureException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException
     {
-        SecretKeySpec signingKey = new SecretKeySpec(key.getBytes(), HMAC_SHA1_ALGORITHM);
+        SecretKeySpec signingKey = new SecretKeySpec(key.getBytes("UTF-8"), HMAC_SHA1_ALGORITHM);
         Mac mac = Mac.getInstance(HMAC_SHA1_ALGORITHM);
         mac.init(signingKey);
-        return toHexString(mac.doFinal(data.getBytes()));
+        Base64 base64 = new Base64();
+        String signature = new String(base64.encode(mac.doFinal(data.toString().getBytes("UTF-8"))), "UTF-8").trim();
+        return URLEncoder.encode(signature, "UTF-8");
     }
 }

@@ -6,6 +6,8 @@ import json.*;
 import java.util.*;
 import weather.*;
 
+import static java.lang.String.*;
+
 /**
  * Created by Yuhan on 8/28/16.
  */
@@ -38,7 +40,7 @@ public class WitRequest {
             }
             Weather w = new Weather();
             HashMap<String, String> chances = w.chances(month, day);
-            return String.join("\n", chances.values());
+            return join("\n", chances.values());
         }
         JSONObject jsonObject = new JSONObject(getRawJson(input));
         jsonObject = jsonObject.getJSONObject("entities");
@@ -84,7 +86,7 @@ public class WitRequest {
             String UVIndex = w.getuvi(month, day, hour).toString();
             String humidity = w.getHumidity(month, day, hour).toString();
             String feelsLike = w.getFeelsLike(month, day, hour).toString();
-            return String.format("%s\n%s, %s °F, feels like %s °F\nWind speed: %s mph %s\nUV Index: %s\nHumidity: %s%%",
+            return format("%s\n%s, %s °F, feels like %s °F\nWind speed: %s mph %s\nUV Index: %s\nHumidity: %s%%",
                     date,
                     condition, temperature, feelsLike,
                     windSpeed, windDirection,
