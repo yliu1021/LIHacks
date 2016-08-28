@@ -24,9 +24,6 @@ public class BaseBot {
         this.client = client; // Sets the client instance to the one provided
     }
 
-    /**
-     * A custom login() method to handle all of the possible exceptions and set the bot instance.
-     */
     public static BaseBot login(String token) {
         BaseBot bot = null; // Initializing the bot variable
 

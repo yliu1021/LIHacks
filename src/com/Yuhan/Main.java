@@ -10,13 +10,14 @@ public class Main {
 
     public static void main(String[] args) {
 
-        IDiscordClient b;
+        IDiscordClient client;
         try {
-            b = new ClientBuilder().withToken(token).login();
+            client = new ClientBuilder().withToken(token).login();
         } catch (DiscordException e) {
-
+            return;
         }
 
+        DiscordBot bot = new DiscordBot(client);
 
     }
 }

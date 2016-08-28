@@ -11,10 +11,6 @@ import sx.blah.discord.util.MessageBuilder;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
 
-/**
- * An example to demonstrate event listening and message sending.
- * It will repeat everything said in a channel.
- */
 public class DiscordBot extends BaseBot implements IListener<MessageReceivedEvent> {
 
     public DiscordBot(IDiscordClient discordClient) {
@@ -23,10 +19,6 @@ public class DiscordBot extends BaseBot implements IListener<MessageReceivedEven
         dispatcher.registerListener(this); // Registers this bot as an event listener
     }
 
-    /**
-     * Called when the client receives a message.
-     */
-    @Override
     public void handle(MessageReceivedEvent event) {
         IMessage message = event.getMessage(); // Gets the message from the event object NOTE: This is not the content of the message, but the object itself
         IChannel channel = message.getChannel(); // Gets the channel in which this message was sent.
