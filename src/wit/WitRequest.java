@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.*;
 import json.*;
 import java.util.*;
+import weather.*;
 
 /**
  * Created by Yuhan on 8/28/16.
@@ -19,21 +20,38 @@ public class WitRequest {
         jsonObject = jsonObject.getJSONObject("entities");
         Set<String> keys = jsonObject.keySet();
 
-        String requestType = "";
-        if (keys.contains("weather_inquire")) {
-            requestType = "Weather request\n";
-        } else if (keys.contains("reminder") && keys.contains("remind")) {
-            requestType += "Reminder request\n";
-        }
+        int month = -1, day = -1, hour = -1;
 
-        String modifiers = "";
         if (keys.contains("datetime")) {
-            modifiers += "Date provided\n";
+            JSONObject dateObject = jsonObject.getJSONArray("datetime").getJSONObject(0);
+            String value = dateObject.getString("value");
+            String[] s = value.split("T");
+            String[] date = s[0].split("-");
+            String monthS = date[1];
+            String dayS = date[2];
+            String[] time = s[1].split(":");
+            String hourS = time[0];
+
+            month = Integer.parseInt(monthS);
+            day = Integer.parseInt(dayS);
+            hour = Integer.parseInt(hourS);
         }
         if (keys.contains("location")) {
-            modifiers += "Location provided\n";
+
         }
-        return "Request type: " + requestType + "\n" + "Modifiers: " + modifiers;
+
+        else if (keys.contains("weather_inquire")) {
+            JSONObject weatherData = jsonObject.getJSONArray("weather_inquire").getJSONObject(0);
+            System.out.println(weatherData);
+            Weather w = new Weather();
+            w.parseWeather();
+            Integer temperature = w.getTemperatureOnDay(month, day, hour);
+            String condition = w.getCondition(month, day, hour);
+            return "Temperature: " + temperature.toString() + ", Condition: " + condition;
+        }
+
+        return null;
+//        return "http://icons-ak.wxug.com/i/c/k/clear.gif";
     }
 
     private static String getRawJson(String input) {

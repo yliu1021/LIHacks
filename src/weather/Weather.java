@@ -29,14 +29,13 @@ public class Weather {
             JSONObject forecast = forecasts.getJSONObject(i);
             JSONObject time = forecast.getJSONObject("FCTTIME");
             JSONObject temp = forecast.getJSONObject("temp");
-            JSONObject cond = forecast.getJSONObject("condition");
 
             Integer hour = time.getInt("hour");
             Integer month = time.getInt("mon");
             Integer day = time.getInt("mday");
             Date date = new Date(month,day,hour);
-            Integer temperature = temp.getInt("English");
-            String condition = cond.getString("condition");
+            Integer temperature = temp.getInt("english");
+            String condition = forecast.getString("condition");
             temperatureList.add(temperature);
             dateList.add(date);
             conditionList.add(condition);
@@ -57,11 +56,13 @@ public class Weather {
     public String getCondition(int month, int day, int hour){
         int index = getDateIndex(month,day,hour);
         if (index == -1) return null;
+
         return conditionList.get(index);
     }
 
 
     public int getDateIndex(int month, int day, int hour) {
+        if (month == -1 || day == -1 || hour == -1) return 0;
         Date date = new Date(month, day, hour);
         return dateList.indexOf(date);
     }
