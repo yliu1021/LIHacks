@@ -12,14 +12,19 @@ public class WeatherRequest {
 
     private static String apiKey = "61f22ea25360d343";
 
-    public static JSONObject getWeatherJSON() {
-        return new JSONObject(getRawJson());
+    public static JSONObject getProbabilityJSON(int month, int day) {
+        String url = String.format("http://api.wunderground.com/api/61f22ea25360d343/planner_%02d%02d%02d%02d/q/NY/Great_Neck.json", month, day, month, day);
+        return new JSONObject(getRawJson(url)).getJSONObject("trip").getJSONObject("chance_of");
     }
 
-    public static String getRawJson() {
+    public static JSONObject getWeatherJSON() {
+        return new JSONObject(getRawJson("http://api.wunderground.com/api/61f22ea25360d343/hourly10day/q/NY/Great_Neck.json"));
+    }
+
+    public static String getRawJson(String urlPath) {
         URL url;
         try {
-            url = new URL("http://api.wunderground.com/api/61f22ea25360d343/hourly10day/q/NY/Great_Neck.json");
+            url = new URL(urlPath);
         } catch (MalformedURLException e) {
             System.out.println("Couldn't make url");
             e.printStackTrace();

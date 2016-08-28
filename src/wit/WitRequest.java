@@ -15,12 +15,41 @@ public class WitRequest {
     private static String version = "20160828";
     private static String baseURL = "https://api.wit.ai/message?";
 
+    private static int[] lastDate;
+
     public static String getMessage(String input) {
+        if (input.startsWith("!chances")) {
+            int month, day;
+            if (input.startsWith("!chances ")) {
+                String param = input.substring(9).replace(",", " ").replace("/", " ");
+                String[] args = param.split(" ");
+                if (args.length != 2) return "invalid arguments";
+                month = Integer.parseInt(args[0]);
+                day = Integer.parseInt(args[1]);
+            } else {
+                if (lastDate != null && lastDate.length == 2) {
+                    month = lastDate[0];
+                    day = lastDate[1];
+                } else {
+                    Calendar d = Calendar.getInstance();
+                    month = d.get(Calendar.MONTH);
+                    day = d.get(Calendar.DATE);
+                }
+            }
+            Weather w = new Weather();
+            HashMap<String, String> chances = w.chances(month, day);
+            return String.join("\n", chances.values());
+        }
         JSONObject jsonObject = new JSONObject(getRawJson(input));
         jsonObject = jsonObject.getJSONObject("entities");
+        System.out.println(jsonObject.toString());
         Set<String> keys = jsonObject.keySet();
 
-        int month = -1, day = -1, hour = -1;
+        Calendar d = Calendar.getInstance();
+        int month = d.get(Calendar.MONTH);
+        int day = d.get(Calendar.DATE);
+        int hour = d.get(Calendar.HOUR_OF_DAY);
+        String location = "";
 
         if (keys.contains("datetime")) {
             JSONObject dateObject = jsonObject.getJSONArray("datetime").getJSONObject(0);
@@ -37,17 +66,30 @@ public class WitRequest {
             hour = Integer.parseInt(hourS);
         }
         if (keys.contains("location")) {
-
+            JSONObject locationObject = jsonObject.getJSONArray("location").getJSONObject(0);
+            location = locationObject.getString("value");
         }
 
-        else if (keys.contains("weather_inquire")) {
+        if (keys.contains("weather_inquire")) {
             JSONObject weatherData = jsonObject.getJSONArray("weather_inquire").getJSONObject(0);
             System.out.println(weatherData);
             Weather w = new Weather();
             w.parseWeather();
-            Integer temperature = w.getTemperatureOnDay(month, day, hour);
+            String date = w.getDate(month, day, hour);
+            lastDate = new int[]{month, day};
+            String temperature = w.getTemperatureOnDay(month, day, hour).toString();
             String condition = w.getCondition(month, day, hour);
-            return "Temperature: " + temperature.toString() + ", Condition: " + condition;
+            String windSpeed = w.getWindSpeed(month, day, hour).toString();
+            String windDirection = w.getWindDir(month, day, hour);
+            String UVIndex = w.getuvi(month, day, hour).toString();
+            String humidity = w.getHumidity(month, day, hour).toString();
+            String feelsLike = w.getFeelsLike(month, day, hour).toString();
+            return String.format("%s\n%s, %s °F, feels like %s °F\nWind speed: %s mph %s\nUV Index: %s\nHumidity: %s%%",
+                    date,
+                    condition, temperature, feelsLike,
+                    windSpeed, windDirection,
+                    UVIndex,
+                    humidity);
         }
 
         return null;
