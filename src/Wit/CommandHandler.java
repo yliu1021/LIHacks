@@ -22,8 +22,9 @@ public class CommandHandler {
 
 
         URLConnection connection = new URL(url + "?" + query).openConnection();
-        connection.setRequestProperty ("Authorization Bearer", key);
+        connection.setRequestProperty("Authorization Bearer", key);
         connection.setRequestProperty("Accept-Charset", charset);
         InputStream response = connection.getInputStream();
         return response.toString();
     }
+}
