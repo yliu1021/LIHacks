@@ -1,5 +1,6 @@
 package bot;
 
+import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
 import sx.blah.discord.api.events.IListener;
@@ -10,8 +11,22 @@ import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MessageBuilder;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
+import wit.WRequest;
 
 public class DiscordBot extends BaseBot implements IListener<MessageReceivedEvent> {
+
+    private static String token = "MjE5Mjk2NzA2MzA1NDU4MTc2.CqProw.WVtuEQYTVTkuvy2e2PTE6-E5nrE";
+
+    public static void start() {
+        IDiscordClient client;
+        try {
+            client = new ClientBuilder().withToken(token).login();
+        } catch (DiscordException e) {
+            return;
+        }
+
+        DiscordBot bot = new DiscordBot(client);
+    }
 
     public DiscordBot(IDiscordClient discordClient) {
         super(discordClient);
@@ -24,7 +39,11 @@ public class DiscordBot extends BaseBot implements IListener<MessageReceivedEven
         IChannel channel = message.getChannel(); // Gets the channel in which this message was sent.
         try {
             // Builds (sends) and new message in the channel that the original message was sent with the content of the original message.
-            new MessageBuilder(this.client).withChannel(channel).withContent(message.getContent()).build();
+            String msgContent = message.getContent();
+            String response = WRequest.getMessage(msgContent);
+            if (response == null) response = "Null";
+            System.out.println(response);
+            new MessageBuilder(this.client).withChannel(channel).withContent(response).build();
         } catch (RateLimitException e) { // RateLimitException thrown. The bot is sending messages too quickly!
             System.err.print("Sending messages too quickly!");
             e.printStackTrace();
