@@ -42,6 +42,7 @@ public class DiscordBot extends BaseBot implements IListener<MessageReceivedEven
             String msgContent = message.getContent();
             String response = WitRequest.getMessage(msgContent);
             if (response == null) return;
+            if (response.length() >= 2000) response = response.substring(0, 1997) + "...";
             new MessageBuilder(this.client).withChannel(channel).withContent(response).build();
         } catch (RateLimitException e) { // RateLimitException thrown. The bot is sending messages too quickly!
             System.err.print("Sending messages too quickly!");

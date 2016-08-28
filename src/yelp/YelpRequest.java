@@ -50,7 +50,8 @@ public class YelpRequest {
 
     private static String getRawJson(String urlPath, String term, String location) {
         String parameters = "";
-        parameters += "location=" + location;
+        parameters += "limit=5";
+        parameters += "&location=" + location;
         parameters += "&oauth_consumer_key=" + consumerKey;
         SecureRandom random = new SecureRandom();
         parameters += "&oauth_nonce=" + new BigInteger(130, random).toString(32);
@@ -60,7 +61,7 @@ public class YelpRequest {
         long secondsSinceEpoch = calendar.getTimeInMillis() / 1000L;
         parameters += "&oauth_timestamp=" + Integer.toString((int)secondsSinceEpoch);
         parameters += "&oauth_token=" + token;
-
+        parameters += "&sort=2";
         parameters += "&term=" + term;
 
         String data;
@@ -69,7 +70,7 @@ public class YelpRequest {
         } catch (UnsupportedEncodingException e) {
             return null;
         }
-
+        System.out.println(data);
         try {
             parameters += "&oauth_signature=" + HmacSha1Signature.calculateRFC2104HMAC(data, consumerSecret+"&"+tokenSecret);
         } catch (InvalidKeyException e) {

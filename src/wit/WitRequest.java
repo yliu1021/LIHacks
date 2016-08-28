@@ -5,6 +5,7 @@ import java.net.*;
 import json.*;
 import java.util.*;
 import weather.*;
+import yelp.Yelp;
 
 import static java.lang.String.*;
 
@@ -51,21 +52,30 @@ public class WitRequest {
         int month = d.get(Calendar.MONTH);
         int day = d.get(Calendar.DATE);
         int hour = d.get(Calendar.HOUR_OF_DAY);
+
+        boolean hasDateTime = false;
+
         String location = "";
 
         if (keys.contains("datetime")) {
             JSONObject dateObject = jsonObject.getJSONArray("datetime").getJSONObject(0);
-            String value = dateObject.getString("value");
+            String value;
+            if (dateObject.keySet().contains("value")) {
+                value = dateObject.getString("value");
+            } else {
+                value = dateObject.getJSONArray("values").getJSONObject(0).getJSONObject("from").getString("value");
+            }
+
             String[] s = value.split("T");
             String[] date = s[0].split("-");
             String monthS = date[1];
             String dayS = date[2];
             String[] time = s[1].split(":");
             String hourS = time[0];
-
             month = Integer.parseInt(monthS);
             day = Integer.parseInt(dayS);
             hour = Integer.parseInt(hourS);
+            hasDateTime = true;
         }
         if (keys.contains("location")) {
             JSONObject locationObject = jsonObject.getJSONArray("location").getJSONObject(0);
@@ -77,8 +87,19 @@ public class WitRequest {
             System.out.println(weatherData);
             Weather w = new Weather();
             w.parseWeather();
-            String date = w.getDate(month, day, hour);
             lastDate = new int[]{month, day};
+            if (!hasDateTime) {
+                month = -1;
+                day = -1;
+                hour = -1;
+            }
+            String date = w.getDate(month, day, hour);
+            if (date == null) {
+                month = -1;
+                day = -1;
+                hour = -1;
+            }
+            date = w.getDate(month, day, hour);
             String temperature = w.getTemperatureOnDay(month, day, hour).toString();
             String condition = w.getCondition(month, day, hour);
             String windSpeed = w.getWindSpeed(month, day, hour).toString();
@@ -92,6 +113,15 @@ public class WitRequest {
                     windSpeed, windDirection,
                     UVIndex,
                     humidity);
+        } else if (keys.contains("yelp_inquire")) {
+            if (keys.contains("local_search_query") && keys.contains("location")) {
+                String term = jsonObject.getJSONArray("local_search_query").getJSONObject(0).getString("value");
+                return Yelp.getBusinesses(term, location);
+            }
+            if (keys.contains("term") && keys.contains("location")) {
+                String term = jsonObject.getJSONArray("term").getJSONObject(0).getString("value");
+                return Yelp.getBusinesses(term, location);
+            }
         }
 
 

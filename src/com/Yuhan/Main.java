@@ -8,9 +8,9 @@ public class Main {
 
     public static void main(String[] args) {
 
-        System.out.println(YelpRequest.getYelpJson("pizza", "Great Neck, NY"));
+//        System.out.println(YelpRequest.getYelpJson("pizza", "Great Neck, NY"));
 
-//        DiscordBot.start();
+        DiscordBot.start();
 
     }
 }
