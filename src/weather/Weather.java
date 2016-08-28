@@ -34,7 +34,6 @@ public class Weather {
             JSONObject forecast = forecasts.getJSONObject(i);
             JSONObject time = forecast.getJSONObject("FCTTIME");
             JSONObject temp = forecast.getJSONObject("temp");
-            JSONObject humid = forecast.getJSONObject("humidity");
             JSONObject ws = forecast.getJSONObject("wspd");
             JSONObject wd = forecast.getJSONObject("wdir");
             JSONObject uv = forecast.getJSONObject("uvi");
@@ -44,7 +43,7 @@ public class Weather {
             Integer month = time.getInt("mon");
             Integer day = time.getInt("mday");
 
-            Integer humidity = humid.getInt("humidity");
+            Integer humidity = forecast.getInt("humidity");
             Integer windSpeed = ws.getInt("english");
             String windDirection = wd.getString("dir");
             Integer uvi = uv.getInt("uvi");
