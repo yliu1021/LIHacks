@@ -11,7 +11,7 @@ import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MessageBuilder;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
-import wit.WRequest;
+import wit.WitRequest;
 
 public class DiscordBot extends BaseBot implements IListener<MessageReceivedEvent> {
 
@@ -40,7 +40,7 @@ public class DiscordBot extends BaseBot implements IListener<MessageReceivedEven
         try {
             // Builds (sends) and new message in the channel that the original message was sent with the content of the original message.
             String msgContent = message.getContent();
-            String response = WRequest.getMessage(msgContent);
+            String response = WitRequest.getMessage(msgContent);
             if (response == null) response = "Null";
             System.out.println(response);
             new MessageBuilder(this.client).withChannel(channel).withContent(response).build();

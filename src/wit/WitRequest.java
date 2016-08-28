@@ -8,7 +8,7 @@ import java.util.*;
 /**
  * Created by Yuhan on 8/28/16.
  */
-public class WRequest {
+public class WitRequest {
 
     private static String apiKey = "IT273QMRQK2Q4KLXCBVYP6H7FIOE7SPQ";
     private static String version = "20160828";
